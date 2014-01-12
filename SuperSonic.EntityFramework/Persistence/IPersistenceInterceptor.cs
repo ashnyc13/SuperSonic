@@ -11,4 +11,14 @@ namespace SuperSonic.EntityFramework.Persistence
         void OnPreDelete(DbContext dbContext, PersistanceActionArgs actionArgs);
         void OnPostDelete(DbContext dbContext, PersistanceActionArgs actionArgs);
     }
+
+    public interface IPersistenceInterceptor<TEntity>
+    {
+        void OnPreInsert(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+        void OnPostInsert(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+        void OnPreUpdate(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+        void OnPostUpdate(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+        void OnPreDelete(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+        void OnPostDelete(DbContext dbContext, PersistanceActionArgs<TEntity> actionArgs);
+    }
 }

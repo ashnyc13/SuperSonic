@@ -21,7 +21,8 @@ namespace SuperSonic.EntityFramework.Persistence
         protected static readonly IDictionary<string, IPersistenceInterceptor> PersistenceInterceptors =
             new Dictionary<string, IPersistenceInterceptor>();
 
-        public InterceptingDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
+        public InterceptingDbContext(string nameOrConnectionString)
+            : base(nameOrConnectionString)
         {
         }
 
@@ -53,14 +54,15 @@ namespace SuperSonic.EntityFramework.Persistence
             var entityModifications =
                 ChangeTracker.Entries()
                              .Where(entry => entry.State != EntityState.Unchanged && entry.State != EntityState.Detached)
-                             .Select(entry => new {entry.Entity, PreSaveState = entry.State})
+                             .Select(entry => new { entry.Entity, PreSaveState = entry.State })
                              .ToArray();
 
             // Call pre-action interceptors only if there are no validation errors
             if (!hasValidationErrors)
             {
                 FireInterceptors(entityModifications,
-                                 (interceptor, args, entityState) => interceptor.CallPreAction(this, args, entityState));
+                                         (interceptor, args, entityState) =>
+                                         interceptor.CallPreAction(this, args, entityState));
             }
 
             // Perform save action
@@ -68,14 +70,17 @@ namespace SuperSonic.EntityFramework.Persistence
 
             // Call-post interceptors for each entity that had modifications
             FireInterceptors(entityModifications,
-                             (interceptor, args, entityState) => interceptor.CallPostAction(this, args, entityState));
+                                     (interceptor, args, entityState) =>
+                                     interceptor.CallPostAction(this, args, entityState));
 
             return baseResult;
         }
 
         private static void FireInterceptors(IEnumerable<dynamic> entityModifications,
-                                             Action<IPersistenceInterceptor, PersistanceActionArgs, EntityState>
-                                                 interceptorMethod)
+                                                      Action<
+                                                        IPersistenceInterceptor,
+                                                        PersistanceActionArgs,
+                                                        EntityState> interceptorMethod)
         {
             // Go through each modified entity to fire up interceptors
             foreach (var modification in entityModifications)
@@ -84,8 +89,14 @@ namespace SuperSonic.EntityFramework.Persistence
                 var entityTypeName = modification.Entity.GetType().FullName;
                 if (!PersistenceInterceptors.ContainsKey(entityTypeName)) continue;
 
+                // Prepare action arguments
+                var argsType = typeof (PersistanceActionArgs<>).MakeGenericType(modification.Entity.GetType());
+                var args = Activator.CreateInstance(argsType) as PersistanceActionArgs;
+// ReSharper disable PossibleNullReferenceException
+                args.Entity = modification.Entity;
+// ReSharper restore PossibleNullReferenceException
+
                 // Call the appropriate method on interceptor based on entry state
-                var args = new PersistanceActionArgs {Entity = modification.Entity};
                 var interceptor = PersistenceInterceptors[entityTypeName];
                 interceptorMethod(interceptor, args, modification.PreSaveState);
             }

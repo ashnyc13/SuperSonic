@@ -53,6 +53,12 @@
     <Compile Include="Validation\IEntityValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SuperSonic.Core\SuperSonic.Core.csproj">
+      <Project>{12b3aa84-0943-4352-a394-88513aec8d33}</Project>
+      <Name>SuperSonic.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
