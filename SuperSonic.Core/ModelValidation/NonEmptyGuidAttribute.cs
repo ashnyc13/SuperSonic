@@ -10,7 +10,7 @@ namespace SuperSonic.Core.ModelValidation
             if (!(value is Guid)) return ValidationResult.Success;
             var guid = (Guid) value;
             return guid == Guid.Empty
-                       ? new ValidationResult(string.Format("{0} cannot be an Empty Guid", validationContext.MemberName))
+                       ? new ValidationResult(string.Format("{0} cannot be an Empty Guid", validationContext.DisplayName))
                        : ValidationResult.Success;
         }
     }
