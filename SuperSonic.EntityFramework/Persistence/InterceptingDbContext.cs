@@ -37,7 +37,7 @@ namespace SuperSonic.EntityFramework.Persistence
             if (Validators.ContainsKey(entityTypeName))
             {
                 var validator = Validators[entityTypeName];
-                return validator.IsValid(entityEntry.Entity, this, baseResult);
+                return validator.IsValid(entityEntry, this, baseResult);
             }
 
             // If no validator registered, use base result
